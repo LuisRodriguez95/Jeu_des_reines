@@ -83,7 +83,7 @@ let rec pawn_win m i=
 
 (* You have to provide these. *)
 let initial = 
-  let init = Array.make 8 (Array.make 8 Empty) in 
+  let init = Array.make_matrix 8 8 Empty in 
 	let aux m = 
       m.(3).(0) <- Queen ;
   		m.(0).(7) <- Pawn 1 ;

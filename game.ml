@@ -16,9 +16,9 @@ type result = Win of player
 
    let piece2s p =
      match p with
-     | Queen -> "Queen"
-     | Pawn i -> "Pawn " ^ string_of_int i 
-     | Empty -> "Empty"
+     | Queen -> "X"
+     | Pawn i ->  string_of_int i 
+     | Empty -> "O"
 
 
    let state2s (m,p) = Printf.sprintf "Current = \n%s\n  // %s to play" (matrix2s m piece2s) (player2s p) 
@@ -56,7 +56,7 @@ let readmove s =
    | _ -> None
    in
    
-   try (Scanf.sscanf s "(%d,%s,%d)" aux)
+   try (Scanf.sscanf s "%d %s %d" aux)
    with _ -> None
 
 (*Fonctions auxiliaires pour le jeu*)
@@ -85,14 +85,14 @@ let rec pawn_win m i=
 let initial = 
   let init = Array.make_matrix 8 8 Empty in 
 	let aux m = 
-      m.(3).(0) <- Queen ;
-  		m.(0).(7) <- Pawn 1 ;
-  		m.(1).(7) <- Pawn 2 ;
-  		m.(2).(7) <- Pawn 3 ;
-  		m.(3).(7) <- Pawn 4 ;
-  		m.(4).(7) <- Pawn 5 ;
-  		m.(5).(7) <- Pawn 6 ;
-  		m.(6).(7) <- Pawn 7 ;
+      m.(0).(3) <- Queen ;
+  		m.(7).(0) <- Pawn 1 ;
+  		m.(7).(1) <- Pawn 2 ;
+  		m.(7).(2) <- Pawn 3 ;
+  		m.(7).(3) <- Pawn 4 ;
+  		m.(7).(4) <- Pawn 5 ;
+  		m.(7).(5) <- Pawn 6 ;
+  		m.(7).(6) <- Pawn 7 ;
   		m.(7).(7) <- Pawn 8 ;
       m
   	in			

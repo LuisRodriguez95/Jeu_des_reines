@@ -26,3 +26,4 @@ val find_cell: 'a matrix -> ('a -> bool) -> (int * int) option
  *                    v2s maps a single value to a string (of fixed length, e.g. always 2 characters). *)
 val matrix2s: 'a matrix -> ('a -> string) -> string
 
+val inside_matrix: int*int -> bool

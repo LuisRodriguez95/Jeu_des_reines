@@ -6,10 +6,10 @@ open Gamebase
  *
 *)
 (* Type that defines the different pieces : Pawns and the Queen*)
-type piece
+type piece = Queen | Pawn of int | Empty
 
 (* Type to define a direction*)
-type dir
+type dir = N | NE | E | SE | S | SO | O | NO 
 
 (* The type 'state' represents a game configuration.
  *  for example, for tic-tac-toe it is a 3x3 grid 
@@ -45,7 +45,7 @@ val readmove: string -> move option
 val movement: int*int -> dir -> int -> int * int
 
 (* Returns true if a pawn has reached the top of the board*)
-val pawn_win : 'a matrix -> int -> bool
+val pawn_win : piece matrix -> int -> bool
 
 (* Initial state, when the game starts. *)
 val initial: state
@@ -62,7 +62,7 @@ val play: state -> move -> state
 (* Returns the list of moves that can be played in the current state, or any superset of it.
  * e.g. in connect 4, it can be a list of all columns (although not all columns are playable). 
  * Moves will be filtered by is_valid anyway. *)
-val all_moves: state -> move list
+val all_moves: state -> move list 
 
 (* Returns the result of the game. None if the result is not known yet. *)
 val result: state -> result option

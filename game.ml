@@ -63,14 +63,14 @@ let readmove s =
 
 let movement (x,y) dir dist = 
     match dir with
-      | S -> (x,y-dist)
-      | N -> (x,y+dist)
-      | O -> (x-dist,y)
-      | E -> (x+dist,y)
-      | SE -> (x+dist,y-dist)
-      | NE -> (x+dist,y+dist)
-      | SO -> (x-dist,y-dist)
-      | NO -> (x-dist,y+dist)
+      | S -> (x+dist,y)
+      | N -> (x-dist,y)
+      | O -> (x,y-dist)
+      | E -> (x,y+dist)
+      | SE -> (x+dist,y+dist)
+      | NE -> (x-dist,y+dist)
+      | SO -> (x+dist,y-dist)
+      | NO -> (x-dist,y-dist)
 
 let rec pawn_win m i= 
   if  i=0 then false 
@@ -125,16 +125,18 @@ let play (m,pl) (piece,dir,dist) =  (*state et move en argument et renvoie state
         let (x2,y2) = movement (x,y) dir dist in
         newM.(x2).(y2) <- piece;
         newM.(x).(y) <- Empty;
+        Printf.printf "passage par ici pour la reine se trouvant a %d %d \n%!" x y ;
         (newM, next pl))
     | Empty -> raise Not_found
     | Pawn i ->
-      (let coord = find_cell m (fun x -> match x with | Pawn i -> true | _ -> false) in (* a modidifer car ça renvoie Some coord, tester le cas None*)
+      (let coord = find_cell m (fun x -> match x with | Pawn i -> Printf.printf "%d \n%!" i;true | _ -> false) in (* a modidifer car ça renvoie Some coord, tester le cas None*)
       match coord with
       | None -> raise Not_found
       | Some (x,y) ->
         let (x2,y2) = movement (x,y) dir dist in
         newM.(x2).(y2) <- piece;
         newM.(x).(y) <- Empty;
+        Printf.printf "passage par ici pour le pawn %d se trouvant a %d %d \n%!" i x y ;
         (newM, next pl))
 
 

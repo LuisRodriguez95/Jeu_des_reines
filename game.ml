@@ -92,7 +92,7 @@ let rec pawn_win m i=
   else 
     match(find_cell m (match_pawn i)) with
       | None -> pawn_win m (i-1) 
-      | Some (x,y) -> if y=8 then true else pawn_win m (i-1)
+      | Some (x,y) -> if x=0 then true else pawn_win m (i-1)
 
 
 
@@ -141,7 +141,8 @@ let play (m,pl) (piece,dir,dist) =  (*state et move en argument et renvoie state
         let (x2,y2) = movement (x,y) dir dist in
         newM.(x2).(y2) <- piece;
         newM.(x).(y) <- Empty;
-        Printf.printf "passage par ici pour la reine se trouvant a %d %d \n%!" x y ;
+        (*Printf.printf "passage par ici pour la reine se trouvant a %d %d \n%!" x y ;
+        Printf.printf " %s \n%!" (matrix2s newM piece2s) ;*)
         (newM, next pl))
     | Empty -> raise Not_found
     | Pawn i ->
@@ -152,7 +153,7 @@ let play (m,pl) (piece,dir,dist) =  (*state et move en argument et renvoie state
         let (x2,y2) = movement (x,y) dir dist in
         newM.(x2).(y2) <- piece;
         newM.(x).(y) <- Empty;
-        Printf.printf "passage par ici pour le pawn %d se trouvant a %d %d \n%!" i x y ;
+        (*Printf.printf "passage par ici pour le pawn %d se trouvant a %d %d \n%!" i x y ;*)
         (newM, next pl)))
 
 

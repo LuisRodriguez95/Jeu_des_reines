@@ -87,16 +87,10 @@ let match_pawn i =
 		| _ -> assert false
 
 
-
 let rec pawn_win m i= 
   if  i=0 then false 
   else 
     match(find_cell m (match_pawn i)) with
-
-let rec pawn_win m i= 
-  if  i=0 then false 
-  else 
-    match(find_cell m (fun x -> match x with | (Pawn i) -> true | _ -> false)) with
       | None -> pawn_win m (i-1) 
       | Some (x,y) -> if y=8 then true else pawn_win m (i-1)
 
@@ -126,24 +120,15 @@ let is_valid (l,pl) (piece,dir,dist) =
     	| Queen -> let coord = find_cell l (fun x -> match x with | Queen -> true | _ -> false) in (* a modidifer car ça renvoie Some coord*)
           		(match coord with
 
-              | None -> Printf.printf "coucocu%!" ; raise Not_found
+              | None -> false
               | Some coord -> if (inside_matrix (movement coord dir dist)) then true  else false) 
     	| Empty -> false
     	| Pawn i->       
         let coordP = find_cell l (match_pawn i) in (* a modidifer car ça renvoie Some coord*)
         let coordQ = find_cell l (fun x -> match x with | Queen -> true | _ -> false) in
-        match (coordP,coordQ) with
+        (match (coordP,coordQ) with
           | (Some (xP,yP),Some (xQ,yQ)) -> if ((inside_matrix (movement (xP,yP) dir dist)) && dist=1 && (dir=N || (dir=NE && (xQ=xP+1 && yQ= yP+1)) || (dir = NO && (xQ = xP-1 && yQ = yP + 1)))) then true  else false 
-          | _ -> Printf.printf "coucocu%!" ;raise Not_found
-              | None -> raise Not_found
-              | Some coord -> if (inside_matrix (movement coord dir dist)) then true  else false) 
-    	| Empty -> false
-    	| Pawn i->       
-        let coordP = find_cell l (fun x -> match x with | Pawn i -> true | _ -> false) in (* a modidifer car ça renvoie Some coord*)
-        let coordQ = find_cell l (fun x -> match x with | Queen -> true | _ -> false) in
-        match (coordP,coordQ) with
-          | (Some (xP,yP),Some (xQ,yQ)) -> if ((inside_matrix (movement (xP,yP) dir dist)) && dist=1 && (dir=N || (dir=NE && (xQ=xP+1 && yQ= yP+1)) || (dir = NO && (xQ = xP-1 && yQ = yP + 1)))) then true  else false 
-          | _ -> raise Not_found
+          | _ -> false)
             	
 let play (m,pl) (piece,dir,dist) =  (*state et move en argument et renvoie state*) 
   let newM = clone_matrix m in
@@ -161,15 +146,14 @@ let play (m,pl) (piece,dir,dist) =  (*state et move en argument et renvoie state
     | Empty -> raise Not_found
     | Pawn i ->
       (let coord = find_cell m (match_pawn i) in (* a modidifer car ça renvoie Some coord, tester le cas None*)
-      (let coord = find_cell m (fun x -> match x with | Pawn i -> Printf.printf "%d \n%!" i;true | _ -> false) in (* a modidifer car ça renvoie Some coord, tester le cas None*)
-      match coord with
+      (match coord with
       | None -> raise Not_found
       | Some (x,y) ->
         let (x2,y2) = movement (x,y) dir dist in
         newM.(x2).(y2) <- piece;
         newM.(x).(y) <- Empty;
         Printf.printf "passage par ici pour le pawn %d se trouvant a %d %d \n%!" i x y ;
-        (newM, next pl))
+        (newM, next pl)))
 
 
 
@@ -212,7 +196,6 @@ let result (m,player) =
         match i with
         	| 0 -> Some (Win Comput)
         	| _ -> if ( find_cell m (match_pawn i) = None ) then aux (i-1) else None
-        	| _ -> if ( find_cell m (fun x -> match x with | Pawn i -> true | _ -> false) = None ) then aux (i-1) else None
       in 
         aux 8)
 

@@ -72,6 +72,27 @@ let movement (x,y) dir dist =
       | SO -> (x+dist,y-dist)
       | NO -> (x-dist,y-dist)
 
+
+
+let match_pawn i =
+	match i with
+		| 1 ->  (fun x -> match x with | (Pawn 1) -> true | _ -> false) 
+		| 2 ->  (fun x -> match x with | (Pawn 2) -> true | _ -> false) 
+		| 3 ->  (fun x -> match x with | (Pawn 3) -> true | _ -> false) 
+		| 4 ->  (fun x -> match x with | (Pawn 4) -> true | _ -> false) 
+		| 5 ->  (fun x -> match x with | (Pawn 5) -> true | _ -> false) 
+		| 6 ->  (fun x -> match x with | (Pawn 6) -> true | _ -> false) 
+		| 7 ->  (fun x -> match x with | (Pawn 7) -> true | _ -> false) 
+		| 8 ->  (fun x -> match x with | (Pawn 8) -> true | _ -> false) 
+		| _ -> assert false
+
+
+
+let rec pawn_win m i= 
+  if  i=0 then false 
+  else 
+    match(find_cell m (match_pawn i)) with
+
 let rec pawn_win m i= 
   if  i=0 then false 
   else 
@@ -104,6 +125,16 @@ let is_valid (l,pl) (piece,dir,dist) =
   	match piece with
     	| Queen -> let coord = find_cell l (fun x -> match x with | Queen -> true | _ -> false) in (* a modidifer car ça renvoie Some coord*)
           		(match coord with
+
+              | None -> Printf.printf "coucocu%!" ; raise Not_found
+              | Some coord -> if (inside_matrix (movement coord dir dist)) then true  else false) 
+    	| Empty -> false
+    	| Pawn i->       
+        let coordP = find_cell l (match_pawn i) in (* a modidifer car ça renvoie Some coord*)
+        let coordQ = find_cell l (fun x -> match x with | Queen -> true | _ -> false) in
+        match (coordP,coordQ) with
+          | (Some (xP,yP),Some (xQ,yQ)) -> if ((inside_matrix (movement (xP,yP) dir dist)) && dist=1 && (dir=N || (dir=NE && (xQ=xP+1 && yQ= yP+1)) || (dir = NO && (xQ = xP-1 && yQ = yP + 1)))) then true  else false 
+          | _ -> Printf.printf "coucocu%!" ;raise Not_found
               | None -> raise Not_found
               | Some coord -> if (inside_matrix (movement coord dir dist)) then true  else false) 
     	| Empty -> false
@@ -129,6 +160,7 @@ let play (m,pl) (piece,dir,dist) =  (*state et move en argument et renvoie state
         (newM, next pl))
     | Empty -> raise Not_found
     | Pawn i ->
+      (let coord = find_cell m (match_pawn i) in (* a modidifer car ça renvoie Some coord, tester le cas None*)
       (let coord = find_cell m (fun x -> match x with | Pawn i -> Printf.printf "%d \n%!" i;true | _ -> false) in (* a modidifer car ça renvoie Some coord, tester le cas None*)
       match coord with
       | None -> raise Not_found
@@ -179,6 +211,7 @@ let result (m,player) =
     	let rec aux i = 
         match i with
         	| 0 -> Some (Win Comput)
+        	| _ -> if ( find_cell m (match_pawn i) = None ) then aux (i-1) else None
         	| _ -> if ( find_cell m (fun x -> match x with | Pawn i -> true | _ -> false) = None ) then aux (i-1) else None
       in 
         aux 8)

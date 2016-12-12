@@ -146,7 +146,7 @@ let play (m,pl) (piece,dir,dist) =  (*state et move en argument et renvoie state
         (newM, next pl))
     | Empty -> raise Not_found
     | Pawn i ->
-      (let coord = find_cell m (match_pawn i) in (* a modidifer car ça renvoie Some coord, tester le cas None*)
+      (let coord = find_cell m (match_pawn i) in 
       (match coord with
       | None -> raise Not_found
       | Some (x,y) ->
@@ -186,7 +186,30 @@ let all_moves (matrix,player)= (* je suppose pour le moment que c'est le human q
     		| _ -> create_moves_comput
 
 				  
-				  
+let rec trier_moves l (matrix,player) =
+  match player with
+  | Human -> (match l with 
+      | [] -> []
+      | (Pawn i, dir, dist) :: t -> let coord = find_cell matrix (match_pawn i) in 
+              (match coord with
+                | None -> raise Not_found
+                | Some (x,y) -> let (x,y) = movement (x,y) dir dist in (*coordonnees apres le mouvement*)
+                      let coordQ = find_cell matrix (fun x -> match x with | Queen -> true | _ -> false) in (*coordonnees de la reine*) 
+                      (match coordQ with
+                        | None -> raise Not_found
+                        | Some (xQ,yQ) -> if (x=xQ) && (y=yQ) then (Pawn i, dir,dist)::(trier_moves t (matrix,player)) (*ajout en debut de list*)
+                                          else List.append (trier_moves t (matrix,player))  [(List.hd l)] ))
+      | _ -> raise Not_found)
+  | Comput -> (match l with 
+      | [] -> []
+      | (Queen, dir, dist) :: t -> let coord = find_cell matrix (fun x -> match x with | Queen -> true | _ -> false)  in 
+              (match coord with
+                | None -> raise Not_found
+                | Some (x,y) -> let (x,y) = movement (x,y) dir dist in (*coordonnees apres le mouvement*)
+                      if matrix.(x).(y) = Empty then  (List.append (trier_moves t (matrix,player)) [(List.hd l)])  (*Rajout en fin de liste car pas un pion*)
+                      else (Queen, dir,dist)::(trier_moves t (matrix,player))) (*Rajout en debut de liste car un pion*)
+      | _ -> raise Not_found)
+
 	
 let result (m,player) = 
 	if (pawn_win m 8) then Some (Win Human) 

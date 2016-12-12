@@ -26,4 +26,5 @@ let rec best_move state =
 		 		| [] -> []
 		 		| m :: reste -> (Some m,( snd (best_move (play state m))))::(didi reste)
     	in 
-    		find_max (turn state) (didi (List.filter (is_valid state) (all_moves state)))
+    		let liste = trier_moves (all_moves state) state in 
+    		find_max (turn state) (didi (List.filter (is_valid state) liste))

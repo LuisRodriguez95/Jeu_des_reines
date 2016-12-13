@@ -1,5 +1,7 @@
 open Gamebase
 
+let size = 5
+
 type piece = Queen | Pawn of int | Empty
 
 type dir = N | NE | E | SE | S | SO | O | NO 
@@ -12,13 +14,14 @@ type move =  piece * dir * int (* piece, direction, distance a deplacer *)
 
 type result = Win of player
 
+
 (*Printers *)
 
    let piece2s p =
      match p with
-     | Queen -> "X"
+     | Queen -> "Q"
      | Pawn i ->  string_of_int i 
-     | Empty -> "O"
+     | Empty -> " "
 
 
    let state2s (m,p) = Printf.sprintf "Current = \n%s\n  // %s to play" (matrix2s m piece2s) (player2s p) 
@@ -81,9 +84,9 @@ let match_pawn i =
 		| 3 ->  (fun x -> match x with | (Pawn 3) -> true | _ -> false) 
 		| 4 ->  (fun x -> match x with | (Pawn 4) -> true | _ -> false) 
 		| 5 ->  (fun x -> match x with | (Pawn 5) -> true | _ -> false) 
-		| 6 ->  (fun x -> match x with | (Pawn 6) -> true | _ -> false) 
+		(*| 6 ->  (fun x -> match x with | (Pawn 6) -> true | _ -> false) 
 		| 7 ->  (fun x -> match x with | (Pawn 7) -> true | _ -> false) 
-		| 8 ->  (fun x -> match x with | (Pawn 8) -> true | _ -> false) 
+		| 8 ->  (fun x -> match x with | (Pawn 8) -> true | _ -> false) *)
 		| _ -> assert false
 
 
@@ -98,17 +101,17 @@ let rec pawn_win m i=
 
 (* You have to provide these. *)
 let initial = 
-  let init = Array.make_matrix 8 8 Empty in 
+  let init = Array.make_matrix size size Empty in 
 	let aux m = 
-      m.(0).(3) <- Queen ;
-  		m.(7).(0) <- Pawn 1 ;
-  		m.(7).(1) <- Pawn 2 ;
-  		m.(7).(2) <- Pawn 3 ;
-  		m.(7).(3) <- Pawn 4 ;
-  		m.(7).(4) <- Pawn 5 ;
-  		m.(7).(5) <- Pawn 6 ;
+      m.(0).(2) <- Queen ;
+  		m.(4).(2) <- Pawn 1 ;
+  		m.((size-1)).(1) <- Pawn 2 ;
+  		m.((size-1)).(3) <- Pawn 3 ;
+  		(*m.((size-1)).(3) <- Pawn 4 ;
+  		m.((size-1)).(4) <- Pawn 5 ; *)
+  		(*m.(7).(5) <- Pawn 6 ;
   		m.(7).(6) <- Pawn 7 ;
-  		m.(7).(7) <- Pawn 8 ;
+  		m.(7).(7) <- Pawn 8 ; *)
       m
   	in			
     		(aux init, Human)
@@ -127,7 +130,7 @@ let is_valid (l,pl) (piece,dir,dist) =
         let coordP = find_cell l (match_pawn i) in (* a modidifer car ça renvoie Some coord*)
         let coordQ = find_cell l (fun x -> match x with | Queen -> true | _ -> false) in
         (match (coordP,coordQ) with
-          | (Some (xP,yP),Some (xQ,yQ)) -> if ((inside_matrix (movement (xP,yP) dir dist)) && dist=1 && (dir=N || (dir=NE && (xQ=xP+1 && yQ= yP+1)) || (dir = NO && (xQ = xP-1 && yQ = yP + 1)))) then true  else false 
+          | (Some (xP,yP),Some (xQ,yQ)) -> if ((inside_matrix (movement (xP,yP) dir dist)) && dist=1 && (dir=N || (dir=NE && (xQ=xP-1 && yQ= yP+1)) || (dir = NO && (xQ = xP-1 && yQ = yP - 1)))) then true  else false 
           | _ -> false)
             	
 let play (m,pl) (piece,dir,dist) =  (*state et move en argument et renvoie state*) 
@@ -146,7 +149,7 @@ let play (m,pl) (piece,dir,dist) =  (*state et move en argument et renvoie state
         (newM, next pl))
     | Empty -> raise Not_found
     | Pawn i ->
-      (let coord = find_cell m (match_pawn i) in 
+      (let coord = find_cell m (match_pawn i) in (* a modidifer car ça renvoie Some coord, tester le cas None*)
       (match coord with
       | None -> raise Not_found
       | Some (x,y) ->
@@ -161,7 +164,7 @@ let play (m,pl) (piece,dir,dist) =  (*state et move en argument et renvoie state
 
 
 let create_moves_comput =
-  let l_dist = [1;2;3;4;5;6;7] in
+  let l_dist = [1;2;3;4] in
   let l_dir = [N; NE; NO; S; SE; SO; O; E] in
   let rec aux l1 l2 sauv =
     match (l1,l2) with
@@ -180,39 +183,14 @@ let all_moves (matrix,player)= (* je suppose pour le moment que c'est le human q
                 			(Pawn 3, N,1); (Pawn 3, NE,1);(Pawn 3, NO,1);
                 			(Pawn 4, N,1); (Pawn 4, NE,1);(Pawn 4, NO,1);
                 			(Pawn 5, N,1); (Pawn 5, NE,1);(Pawn 5, NO,1);
-                			(Pawn 6, N,1); (Pawn 6, NE,1);(Pawn 6, NO,1);
-                			(Pawn 7, N,1); (Pawn 7, NE,1);(Pawn 7, NO,1);
-                			(Pawn 8, N,1); (Pawn 8, NE,1);(Pawn 8, NO,1)]	
+                			]	
     		| _ -> create_moves_comput
 
 				  
-let rec trier_moves l (matrix,player) =
-  match player with
-  | Human -> (match l with 
-      | [] -> []
-      | (Pawn i, dir, dist) :: t -> let coord = find_cell matrix (match_pawn i) in 
-              (match coord with
-                | None -> raise Not_found
-                | Some (x,y) -> let (x,y) = movement (x,y) dir dist in (*coordonnees apres le mouvement*)
-                      let coordQ = find_cell matrix (fun x -> match x with | Queen -> true | _ -> false) in (*coordonnees de la reine*) 
-                      (match coordQ with
-                        | None -> raise Not_found
-                        | Some (xQ,yQ) -> if (x=xQ) && (y=yQ) then (Pawn i, dir,dist)::(trier_moves t (matrix,player)) (*ajout en debut de list*)
-                                          else List.append (trier_moves t (matrix,player))  [(List.hd l)] ))
-      | _ -> raise Not_found)
-  | Comput -> (match l with 
-      | [] -> []
-      | (Queen, dir, dist) :: t -> let coord = find_cell matrix (fun x -> match x with | Queen -> true | _ -> false)  in 
-              (match coord with
-                | None -> raise Not_found
-                | Some (x,y) -> let (x,y) = movement (x,y) dir dist in (*coordonnees apres le mouvement*)
-                      if matrix.(x).(y) = Empty then  (List.append (trier_moves t (matrix,player)) [(List.hd l)])  (*Rajout en fin de liste car pas un pion*)
-                      else (Queen, dir,dist)::(trier_moves t (matrix,player))) (*Rajout en debut de liste car un pion*)
-      | _ -> raise Not_found)
-
+				  
 	
 let result (m,player) = 
-	if (pawn_win m 8) then Some (Win Human) 
+	if (pawn_win m size) then Some (Win Human) 
   else 
     if ((find_cell m (fun x -> match x with | Queen -> true | _ -> false))=None) then Some (Win Human) 
     else (
@@ -221,7 +199,7 @@ let result (m,player) =
         	| 0 -> Some (Win Comput)
         	| _ -> if ( find_cell m (match_pawn i) = None ) then aux (i-1) else None
       in 
-        aux 8)
+        aux size)
 
 
 (* This type was given in game.mli.
@@ -235,4 +213,5 @@ match (r1,r2) with
 
 let worst_for p = Win (next p)
 
+let best_for p = Win p
 ;;

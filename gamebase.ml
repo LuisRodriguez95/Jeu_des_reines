@@ -1,5 +1,6 @@
 type player = Human | Comput
 
+let size = 5
 (* Next turn *)
 let next = function
   | Human -> Comput
@@ -47,6 +48,6 @@ let matrix2s m v2s =
       Array.fold_left (fun s line -> s ^ (line2s v2s line) ^ "\n" ^ linesep) linesep m
 
             	
-let inside_matrix (x,y) = if (x<8 && y<8 && x>(-1) && y>(-1)) then true else false
+let inside_matrix (x,y) = if (x<size && y<size && x>(-1) && y>(-1)) then true else false
 
 

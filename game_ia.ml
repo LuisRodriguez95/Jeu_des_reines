@@ -7,7 +7,7 @@ let rec best_move state =
     | m :: _ ->
         let player = turn state in
           (Some m, worst_for player)
-        *)
+        
 let rec find_max p l =
 	match l with
 		|[] -> assert false
@@ -26,5 +26,16 @@ let rec best_move state =
 		 		| [] -> []
 		 		| m :: reste -> (Some m,( snd (best_move (play state m))))::(didi reste)
     	in 
-    		let liste = trier_moves (all_moves state) state in 
-    		find_max (turn state) (didi (List.filter (is_valid state) liste))
+    		find_max (turn state) (didi (List.filter (is_valid state) (all_moves state)))	
+    		
+    			*)
+let rec best_move state =
+	match (result state) with 
+		| Some (p) -> (None,p)
+		| None ->
+		let rec didi l = 
+	  		match l with
+		 		| [] -> (None, worst_for (turn state))
+		 		| m :: reste -> if (snd (best_move (play state m))) = best_for (turn state) then (Some m, best_for (turn state)) else (didi reste)
+    	in 
+    		didi (List.filter (is_valid state) (all_moves state))

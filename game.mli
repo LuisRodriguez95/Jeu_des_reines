@@ -64,9 +64,6 @@ val play: state -> move -> state
  * Moves will be filtered by is_valid anyway. *)
 val all_moves: state -> move list 
 
-(*Sorts moves from all_moves and puts on the first ranges the moves which result on taking a piece from the other player*)
-val trier_moves: move list -> state -> move list
-
 (* Returns the result of the game. None if the result is not known yet. *)
 val result: state -> result option
 
@@ -83,4 +80,6 @@ val compare: player -> result -> result -> comparison
 (* Returns the worst possible score for the given player. Useful for computing min or max.
  * The worst for H is supposed to be the best for C, and conversely. *)
 val worst_for: player -> result
+
+val best_for: player -> result
   

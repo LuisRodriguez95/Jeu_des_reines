@@ -118,17 +118,35 @@ let initial =
 
 let turn (_,p) = p
 
-let is_valid (l,pl) (piece,dir,dist) = 
-  	match piece with
-    	| Queen -> let coord = find_cell l (fun x -> match x with | Queen -> true | _ -> false) in (* a modidifer car ça renvoie Some coord*)
-          		(match coord with
+let rec not_teleport m (x,y) dir dist =
+  if dist = 0 then true
+  else
+    let piece = m.(x).(y) in
+    match piece with
+      |Pawn i -> false
+      | _ ->  (match dir with
+          | S -> not_teleport m (x+1,y) dir (dist-1)
+          | N -> not_teleport m (x-1,y) dir (dist-1)
+          | O -> not_teleport m (x,y-1) dir (dist-1)
+          | E -> not_teleport m (x,y+1) dir (dist-1)
+          | SE -> not_teleport m (x+1,y+1) dir (dist-1)
+          | NE -> not_teleport m (x-1,y+1) dir (dist-1)
+          | SO -> not_teleport m (x+1,y-1) dir (dist-1)
+          | NO -> not_teleport m (x-1,y-1) dir (dist-1))
 
+
+
+
+let is_valid (m,pl) (piece,dir,dist) = 
+  	match piece with
+    	| Queen -> let coord = find_cell m (fun x -> match x with | Queen -> true | _ -> false) in (* a modidifer car ça renvoie Some coord*)
+          		(match coord with
               | None -> false
-              | Some coord -> if (inside_matrix (movement coord dir dist)) then true  else false) 
+              | Some coord -> if (inside_matrix (movement coord dir dist)) && (not_teleport m coord dir dist) then true  else false) 
     	| Empty -> false
     	| Pawn i->       
-        let coordP = find_cell l (match_pawn i) in (* a modidifer car ça renvoie Some coord*)
-        let coordQ = find_cell l (fun x -> match x with | Queen -> true | _ -> false) in
+        let coordP = find_cell m (match_pawn i) in (* a modidifer car ça renvoie Some coord*)
+        let coordQ = find_cell m (fun x -> match x with | Queen -> true | _ -> false) in
         (match (coordP,coordQ) with
           | (Some (xP,yP),Some (xQ,yQ)) -> if ((inside_matrix (movement (xP,yP) dir dist)) && dist=1 && (dir=N || (dir=NE && (xQ=xP-1 && yQ= yP+1)) || (dir = NO && (xQ = xP-1 && yQ = yP - 1)))) then true  else false 
           | _ -> false)

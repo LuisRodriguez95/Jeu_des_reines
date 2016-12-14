@@ -29,6 +29,19 @@ let rec best_move state =
     		find_max (turn state) (didi (List.filter (is_valid state) (all_moves state)))	
     		
     			*)
+
+let memory = Hashtbl.create 10000
+let cache f =
+	fun arg ->
+	if Hashtbl.mem memory arg then Hashtbl.find memory arg
+	else
+	  begin
+	    let res = f arg in
+	    Hashtbl.add memory arg res ;
+	    res
+	  end
+
+
 let rec best_move state =
 	match (result state) with 
 		| Some (p) -> (None,p)
@@ -36,6 +49,6 @@ let rec best_move state =
 		let rec didi l = 
 	  		match l with
 		 		| [] -> (None, worst_for (turn state))
-		 		| m :: reste -> if (snd (best_move (play state m))) = best_for (turn state) then (Some m, best_for (turn state)) else (didi reste)
+		 		| m :: reste -> if (snd ( cache best_move (play state m))) = best_for (turn state) then (Some m, best_for (turn state)) else (didi reste)
     	in 
     		didi (List.filter (is_valid state) (all_moves state))

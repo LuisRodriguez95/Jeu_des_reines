@@ -1,6 +1,7 @@
 type player = Human | Comput
 
-let size = 5
+let size = 5 (* Variable representant la longueur d'un côté de la carte*)
+
 (* Next turn *)
 let next = function
   | Human -> Comput
@@ -47,7 +48,7 @@ let matrix2s m v2s =
     let linesep = (String.make (String.length firstline) '-') ^ "\n" in
       Array.fold_left (fun s line -> s ^ (line2s v2s line) ^ "\n" ^ linesep) linesep m
 
-            	
+(* Fonction permettant de dire si la position (x,y) en argument est comprise dans la carte *)            	
 let inside_matrix (x,y) = if (x<size && y<size && x>(-1) && y>(-1)) then true else false
 
 

@@ -22,7 +22,7 @@ type state
 (* This type represents a move. 
  *   tic-tac-toe: a coordinate in the grid.
  *   connect 4: a column number. *)
-type move
+type move = piece * dir * int
 
 
 (* This type represents the final result of a game.
@@ -36,6 +36,14 @@ type result
 val state2s:   state -> string
 val move2s:     move -> string
 val result2s: result -> string
+val piece2s: piece -> string
+
+
+
+(*graphic functions *)
+val state_to_graphic: state -> unit
+val graphic_initial: unit -> unit
+val drag_n_drop: state -> string
 
 (* Reads a move from a string. 
  * Returns None if the string fails to be parsed. *)
@@ -75,7 +83,9 @@ type comparison = Equal | Greater | Smaller
  *   compare player r1 r2  returns Equal if r1 and r2 are equivalent.
  *                         returns Greater if r2 is better than r1 (from the point of view of player). 
  *                         returns Smaller if r1 is better than r2 (from the point of view of player). *)
-val compare: player -> result -> result -> comparison
+(*val compare: player -> result -> result -> comparison *)
+
+val compare_fold: 'a * result -> 'a * result -> 'a * result
 
 (* Returns the worst possible score for the given player. Useful for computing min or max.
  * The worst for H is supposed to be the best for C, and conversely. *)
